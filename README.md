@@ -24,7 +24,7 @@ Before you begin, make sure you have:
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/harshshukla9/farcaster-solana-starter.git
 cd farcaster-solana-starter
 ```
 
