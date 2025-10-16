@@ -106,7 +106,21 @@ export default function Demo(
   }, [isSDKLoaded]);
 
   const openUrl = useCallback(() => {
-    sdk.actions.openUrl("https://solana.com");
+    sdk.actions.openUrl("https://x.com/PlayTownSquare");
+  }, []);
+
+  const composeCast = useCallback(() => {
+    sdk.actions.composeCast({
+      text: "Check out this amazing Solana Mini App by TownSquare! 🚀",
+    });
+  }, []);
+
+  const signIn = useCallback(() => {
+    sdk.actions.signIn();
+  }, []);
+
+  const viewProfile = useCallback(() => {
+    sdk.actions.openUrl("https://farcaster.xyz/~/profiles/1374072");
   }, []);
 
   const close = useCallback(() => {
@@ -179,24 +193,58 @@ export default function Demo(
 
   return (
     <div className="w-[300px] mx-auto py-4 px-2">
-      <h1 className="text-2xl font-bold mb-4 text-center">{title}</h1>
+      <h1 className="text-2xl font-bold mb-2 text-center">{title}</h1>
+      <p className="text-sm text-gray-600 mb-4 text-center">Solana Mini App Template by TownSquare</p>
 
       <div className="space-y-4">
+        {/* User Profile Section */}
+        {context && (
+          <div className="border rounded-lg p-4 bg-gradient-to-r from-blue-50 to-purple-50">
+            <h2 className="text-lg font-semibold mb-3 text-black">User Profile</h2>
+            <div className="flex items-center space-x-3">
+              {context.user.pfpUrl && (
+                <img 
+                  src={context.user.pfpUrl} 
+                  alt="Profile" 
+                  className="w-12 h-12 rounded-full border-2 border-white shadow-sm" 
+                />
+              )}
+              <div className="flex-1">
+                <div className="font-semibold text-gray-900">{context.user.displayName}</div>
+                <div className="text-sm text-gray-600">@{context.user.username}</div>
+                <div className="text-xs text-gray-500">FID: {context.user.fid}</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Farcaster Mini App Controls */}
         <div className="border rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-3">Farcaster Controls</h2>
           
           <div className="space-y-2">
-            <Button onClick={openUrl} className="w-full">
-              Open Solana.com
+            <Button onClick={addFrame} className="w-full">
+              Add Frame
             </Button>
             
             <Button onClick={close} className="w-full">
               Close App
             </Button>
             
-            <Button onClick={addFrame} className="w-full">
-              Add to Farcaster
+            <Button onClick={composeCast} className="w-full">
+              Compose Cast
+            </Button>
+            
+            <Button onClick={openUrl} className="w-full">
+              Visit TownSquare
+            </Button>
+            
+            <Button onClick={signIn} className="w-full">
+              Sign In
+            </Button>
+            
+            <Button onClick={viewProfile} className="w-full">
+              View TownSquare Profile
             </Button>
             {addFrameResult && (
               <div className="text-xs mt-1 text-gray-600 bg-gray-100 p-2 rounded">
@@ -244,12 +292,87 @@ export default function Demo(
         )}
 
         {/* Debug Info */}
-        <div>
-          <Button onClick={toggleContext} className="w-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-            {isContextOpen ? "Hide" : "Show"} Debug Info
-          </Button>
+        <div className="border rounded-lg p-4">
+          <h2 className="text-lg font-semibold mb-3">Debug Information</h2>
+          
+          <div className="space-y-2">
+            <Button onClick={toggleContext} className="w-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+              {isContextOpen ? "Hide" : "Show"} Full Context
+            </Button>
+            
+            {context && (
+              <>
+                <Button 
+                  onClick={() => navigator.clipboard.writeText(JSON.stringify(context.user, null, 2))}
+                  className="w-full bg-blue-100 text-blue-700 hover:bg-blue-200"
+                >
+                  Copy User Data
+                </Button>
+                
+                <Button 
+                  onClick={() => navigator.clipboard.writeText(JSON.stringify(context.client, null, 2))}
+                  className="w-full bg-green-100 text-green-700 hover:bg-green-200"
+                >
+                  Copy Client Data
+                </Button>
+                
+                <Button 
+                  onClick={() => navigator.clipboard.writeText(JSON.stringify(context.features, null, 2))}
+                  className="w-full bg-purple-100 text-purple-800 hover:bg-purple-200"
+                >
+                  Copy Features Data
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* User Information Display */}
+          {context && (
+            <div className="mt-4 space-y-3">
+              <div className="border-l-4 border-blue-500 pl-3">
+                <h3 className="font-semibold text-blue-700">User Information</h3>
+                <div className="text-sm space-y-1 mt-1">
+                  <div><span className="font-medium">FID:</span> {context.user.fid}</div>
+                  <div><span className="font-medium">Username:</span> {context.user.username}</div>
+                  <div><span className="font-medium">Display Name:</span> {context.user.displayName}</div>
+                  {context.user.pfpUrl && (
+                    <div className="flex items-center space-x-2">
+                      <span className="font-medium">Profile Picture:</span>
+                      <img src={context.user.pfpUrl} alt="Profile" className="w-8 h-8 rounded-full" />
+                    </div>
+                  )}
+                  {context.user.location && (
+                    <div>
+                      <span className="font-medium">Location:</span> {context.user.location.description || "Not specified"}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Client Information Display */}
+              <div className="border-l-4 border-green-500 pl-3">
+                <h3 className="font-semibold text-green-700">Client Information</h3>
+                <div className="text-sm space-y-1 mt-1">
+                  <div><span className="font-medium">Platform:</span> {context.client.platformType}</div>
+                  <div><span className="font-medium">Client FID:</span> {context.client.clientFid}</div>
+                  <div><span className="font-medium">Added:</span> <span className={context.client.added ? "text-green-600" : "text-red-600"}>{context.client.added ? "Yes" : "No"}</span></div>
+                </div>
+              </div>
+
+              {/* Features Information Display */}
+              <div className="border-l-4 border-purple-500 pl-3">
+                <h3 className="font-semibold text-purple-700">Features</h3>
+                <div className="text-sm space-y-1 mt-1">
+                  <div><span className="font-medium">Haptics:</span> <span className={context.features.haptics ? "text-green-600" : "text-red-600"}>{context.features.haptics ? "Enabled" : "Disabled"}</span></div>
+                  <div><span className="font-medium">Camera & Mic:</span> <span className={context.features.cameraAndMicrophoneAccess ? "text-green-600" : "text-red-600"}>{context.features.cameraAndMicrophoneAccess ? "Enabled" : "Disabled"}</span></div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Full Context Display */}
           {isContextOpen && context && (
-            <div className="text-xs mt-2 text-gray-600 bg-gray-100 p-2 rounded max-h-32 overflow-auto">
+            <div className="text-xs mt-3 text-gray-600 bg-gray-100 p-2 rounded max-h-32 overflow-auto">
               <pre className="whitespace-pre-wrap">
                 {safeJsonStringify(context)}
               </pre>
@@ -305,7 +428,7 @@ function SignSolanaMessage() {
 }
 
 // Demo wallet address for testing
-const DEMO_WALLET_ADDRESS = 'Ao3gLNZAsbrmnusWVqQCPMrcqNi6jdYgu8T6NCoXXQu1';
+const DEMO_WALLET_ADDRESS = '5onjZQHpbNJytKMUs5L6JPzW6WgRs14P94DzzenjqmKs';
 
 function SendSolana() {
   const [state, setState] = useState<

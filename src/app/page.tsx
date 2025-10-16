@@ -1,19 +1,21 @@
 import { Metadata } from "next";
 import App from "./app";
+import { aspectRatioSchema } from "@farcaster/miniapp-core";
 
 const appUrl = process.env.NEXT_PUBLIC_URL;
 
 const frame = {
   version: "next",
-  imageUrl: `${appUrl}/opengraph-image`,
+  imageUrl: `${appUrl}/solaanfarcaster3-2.png`,
   button: {
-    title: "Launch Frame",
+    title: "Launch Town",
     action: {
       type: "launch_frame",
-      name: "Solana Starter - Farcaster Mini App",
-      url: appUrl,
-      splashImageUrl: `${appUrl}/splash.png`,
+      name: "Solana Starter by TownSquare",
+      url: `${appUrl}`,
+      splashImageUrl: `${appUrl}/townsquarepreview.png`,
       splashBackgroundColor: "#f7f7f7",
+      aspectRatioSchema:3/1,
     },
   },
 };
